@@ -60,6 +60,7 @@ namespace RecipeManager.Pages.Recipes
 
             var recipeToUpdate = await _context.Recipe
                 .Include(r => r.RecipeCategories)
+                .ThenInclude(rc => rc.Category)
                 .Include(r => r.Ingredients)
                 .FirstOrDefaultAsync(r => r.ID == id);
 
@@ -69,11 +70,13 @@ namespace RecipeManager.Pages.Recipes
             }
 
             // Update the Recipe fields
-            if (await TryUpdateModelAsync<Recipe>(
-                recipeToUpdate,
-                "Recipe",
-                r => r.Title, r => r.Description, r => r.PreparationTime, r => r.DateCreated))
+            try
             {
+                await TryUpdateModelAsync<Recipe>(
+               recipeToUpdate,
+               "Recipe",
+               r => r.Title, r => r.Description, r => r.PreparationTime, r => r.DateCreated, r => r.Ingredients, r => r.RecipeCategories);
+
                 // Update Categories
                 UpdateBookCategories(_context, selectedCategories, recipeToUpdate);
 
@@ -83,12 +86,15 @@ namespace RecipeManager.Pages.Recipes
                 // Save changes
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");
-            }
 
-            // Repopulate Categories and Ingredients if ModelState is invalid
-            PopulateAssignedCategoryData(_context, recipeToUpdate);
-            Ingredients = recipeToUpdate.Ingredients.ToList();
-            return Page();
+            }
+            catch
+            {
+                // Repopulate Categories and Ingredients if ModelState is invalid
+                PopulateAssignedCategoryData(_context, recipeToUpdate);
+                Ingredients = recipeToUpdate.Ingredients.ToList();
+                return Page();
+            }
         }
 
         private void UpdateRecipeIngredients(Recipe recipeToUpdate)

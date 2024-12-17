@@ -10,27 +10,65 @@
 <p>
     <a asp-page="Create">Create New</a>
 </p>
+
+<!-- Category Table -->
 <table class="table">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Category[0].CategoryName)
             </th>
-            <th></th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Category) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CategoryName)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.Category)
+
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CategoryName)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a> |
+                    <a asp-page="./Index" asp-route-SelectedCategoryId="@item.Id" class="btn btn-primary btn-sm">Select</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<!-- Display Recipes in Selected Category -->
+@if (Model.RecipesInCategory != null && Model.RecipesInCategory.Any())
+
+{
+    <h2>Recipes in @Model.SelectedCategoryName</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Preparation Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var recipe in Model.RecipesInCategory)
+
+            {
+                <tr>
+                    <td>@recipe.Title</td>
+                    <td>@recipe.Description</td>
+                    <td>@recipe.PreparationTime minutes</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+else if (Model.SelectedCategoryId.HasValue)
+
+{
+    <h2>No recipes available for @Model.SelectedCategoryName.</h2>
+}
