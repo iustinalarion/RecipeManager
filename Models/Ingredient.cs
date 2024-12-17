@@ -19,7 +19,7 @@ namespace RecipeManager.Models
         [StringLength(10)]
         public string? Unit { get; set; } // Marked as nullable with '?'
 
-        public int RecipeID { get; set; } // Foreign Key
+        public int? RecipeID { get; set; } // Foreign Key
         public Recipe? Recipe { get; set; } // Navigation property marked nullable
     }
 }

@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using RecipeManager.Data;
 using RecipeManager.Models;
 
-namespace RecipeManager.Pages.Recipes
+namespace RecipeManager.Pages.Categories
 {
-    public class DetailsModel : RecipeCategoriesPageModel
+    public class DetailsModel : PageModel
     {
         private readonly RecipeManager.Data.RecipeManagerContext _context;
 
@@ -19,7 +19,7 @@ namespace RecipeManager.Pages.Recipes
             _context = context;
         }
 
-        public Recipe Recipe { get; set; } = default!;
+        public Category Category { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -27,20 +27,16 @@ namespace RecipeManager.Pages.Recipes
             {
                 return NotFound();
             }
-           
-            Recipe = await _context.Recipe
-            .Include(b => b.RecipeCategories).ThenInclude(b => b.Category)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(m => m.ID == id);
 
-
-            if (Recipe == null)
+            var category = await _context.Category.FirstOrDefaultAsync(m => m.Id == id);
+            if (category == null)
             {
                 return NotFound();
             }
-
-            PopulateAssignedCategoryData(_context, Recipe);
-
+            else
+            {
+                Category = category;
+            }
             return Page();
         }
     }

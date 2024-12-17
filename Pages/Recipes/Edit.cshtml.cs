@@ -9,9 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using RecipeManager.Data;
 using RecipeManager.Models;
 
+
 namespace RecipeManager.Pages.Recipes
 {
-    public class EditModel : PageModel
+    public class EditModel : RecipeCategoriesPageModel
     {
         private readonly RecipeManager.Data.RecipeManagerContext _context;
 
@@ -30,48 +31,62 @@ namespace RecipeManager.Pages.Recipes
                 return NotFound();
             }
 
-            var recipe =  await _context.Recipe.FirstOrDefaultAsync(m => m.ID == id);
-            if (recipe == null)
+            Recipe = await _context.Recipe
+                .Include(b => b.RecipeCategories).ThenInclude(b => b.Category)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.ID == id);
+
+           
+            if (Recipe == null)
             {
                 return NotFound();
             }
-            Recipe = recipe;
+
+            PopulateAssignedCategoryData(_context, Recipe);
+
             return Page();
+
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int? id, string[]
+selectedCategories)
         {
-            if (!ModelState.IsValid)
+            if (id == null)
             {
-                return Page();
+                return NotFound();
             }
-
-            _context.Attach(Recipe).State = EntityState.Modified;
-
-            try
+            
+            var recipeToUpdate = await _context.Recipe
+            .Include(i => i.RecipeCategories)
+            .ThenInclude(i => i.Category)
+            .FirstOrDefaultAsync(s => s.ID == id);
+            if (recipeToUpdate == null)
             {
+                return NotFound();
+            }
+           
+            if (await TryUpdateModelAsync<Recipe>(
+            recipeToUpdate,
+            "Recipe",
+            i => i.Title, i => i.Description,
+            i => i.PreparationTime, i => i.Ingredients, i => i.DateCreated ))
+            {
+                UpdateBookCategories(_context, selectedCategories, recipeToUpdate);
                 await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RecipeExists(Recipe.ID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return RedirectToPage("./Index");
-        }
-
-        private bool RecipeExists(int id)
-        {
-            return _context.Recipe.Any(e => e.ID == id);
+            
+            UpdateBookCategories(_context, selectedCategories, recipeToUpdate);
+            PopulateAssignedCategoryData(_context, recipeToUpdate);
+            return Page();
         }
     }
+
+
+       
+    
 }
+
+

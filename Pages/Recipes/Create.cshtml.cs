@@ -10,7 +10,7 @@ using RecipeManager.Models;
 
 namespace RecipeManager.Pages.Recipes
 {
-    public class CreateModel : PageModel
+    public class CreateModel :  RecipeCategoriesPageModel
     {
         private readonly RecipeManager.Data.RecipeManagerContext _context;
 
@@ -25,20 +25,30 @@ namespace RecipeManager.Pages.Recipes
         }
 
         [BindProperty]
-        public Recipe Recipe { get; set; } = default!;
+        public Recipe Recipe { get; set; }
 
-        // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string[] selectedCategories)
         {
-            if (!ModelState.IsValid)
+            var newRecipe = new Recipe();
+            if (selectedCategories != null)
             {
-                return Page();
+                newRecipe.RecipeCategories = new List<RecipeCategory>();
+                foreach (var cat in selectedCategories)
+                {
+                    var catToAdd = new RecipeCategory
+                    {
+                        CategoryID = int.Parse(cat)
+                    };
+                    newRecipe.RecipeCategories.Add(catToAdd);
+                }
             }
-
+            Recipe.RecipeCategories = newRecipe.RecipeCategories;
             _context.Recipe.Add(Recipe);
             await _context.SaveChangesAsync();
-
             return RedirectToPage("./Index");
         }
+
+        // For more information, see https://aka.ms/RazorPagesCRUD.
+       
     }
 }

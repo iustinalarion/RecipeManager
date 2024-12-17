@@ -25,5 +25,7 @@ namespace RecipeManager.Models
         [DataType(DataType.Date)]
         [Display(Name = "Date Created")]
         public DateTime DateCreated { get; set; } = DateTime.Now; // Default to now
+
+        public ICollection<RecipeCategory>? RecipeCategories {  get; set; } 
     }
 }

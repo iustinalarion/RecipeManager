@@ -16,5 +16,6 @@ namespace RecipeManager.Data
 
         public DbSet<RecipeManager.Models.Ingredient> Ingredient { get; set; } = default!;
         public DbSet<RecipeManager.Models.Recipe> Recipe { get; set; } = default!;
+        public DbSet<RecipeManager.Models.Category> Category { get; set; } = default!;
     }
 }

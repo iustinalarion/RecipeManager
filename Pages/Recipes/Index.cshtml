@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/"
 @model RecipeManager.Pages.Recipes.IndexModel
 
 @{
@@ -25,12 +25,23 @@
             <th>
                 @Html.DisplayNameFor(model => model.Recipe[0].DateCreated)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Recipe[0].RecipeCategories)
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Recipe) {
-        <tr>
+
+
+@foreach (var item in Model.RecipeD.Recipes) {
+    string selectedRow = "";
+        if (item.ID == Model.RecipeID)
+            {
+                selectedRow = "table-success";
+            }
+        <tr class="@selectedRow">
+       
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
@@ -43,6 +54,14 @@
             <td>
                 @Html.DisplayFor(modelItem => item.DateCreated)
             </td>
+                <td>
+                    @{
+                        foreach (var category in item.RecipeCategories)
+                        {
+                            @category.Category.Id @: @category.Category.CategoryName <br />
+                        }
+                    }
+                </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
                 <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
