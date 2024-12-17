@@ -7,67 +7,52 @@
 
 <h1>Index</h1>
 
+<!-- Search Form -->
+<form method="get" class="mb-3">
+    <div class="form-inline">
+        <input type="text" name="SearchString" value="@Model.SearchString"
+               class="form-control" placeholder="Search by Title or Description" />
+        <button type="submit" class="btn btn-outline-primary ml-2">Search</button>
+        <a asp-page="./Index" class="btn btn-outline-secondary ml-2">Clear</a>
+    </div>
+</form>
+
 <p>
     <a asp-page="Create">Create New</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Recipe[0].Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Recipe[0].Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Recipe[0].PreparationTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Recipe[0].DateCreated)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Recipe[0].RecipeCategories)
-            </th>
-            <th></th>
+            <th>@Html.DisplayNameFor(model => model.RecipeD.Recipes.FirstOrDefault().Title)</th>
+            <th>@Html.DisplayNameFor(model => model.RecipeD.Recipes.FirstOrDefault().Description)</th>
+            <th>@Html.DisplayNameFor(model => model.RecipeD.Recipes.FirstOrDefault().PreparationTime)</th>
+            <th>@Html.DisplayNameFor(model => model.RecipeD.Recipes.FirstOrDefault().DateCreated)</th>
+            <th>RecipeCategories</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
+        @foreach (var item in Model.RecipeD.Recipes)
 
-
-@foreach (var item in Model.RecipeD.Recipes) {
-    string selectedRow = "";
-        if (item.ID == Model.RecipeID)
-            {
-                selectedRow = "table-success";
-            }
-        <tr class="@selectedRow">
-       
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PreparationTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateCreated)
-            </td>
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                <td>@Html.DisplayFor(modelItem => item.PreparationTime)</td>
+                <td>@Html.DisplayFor(modelItem => item.DateCreated)</td>
                 <td>
-                    @{
-                        foreach (var category in item.RecipeCategories)
-                        {
-                             @category.Category.CategoryName <br />
-                        }
+                    @foreach (var category in item.RecipeCategories)
+                    {
+                        <span>@category.Category.CategoryName<br /></span>
                     }
                 </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

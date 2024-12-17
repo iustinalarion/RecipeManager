@@ -36,12 +36,59 @@
             @Html.DisplayFor(model => model.Recipe.DateCreated)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Recipe.RecipeCategories)
+            Categories
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Recipe.RecipeCategories)
+            @if (Model.Recipe.RecipeCategories != null && Model.Recipe.RecipeCategories.Any())
+            {
+
+                foreach (var category in Model.Recipe.RecipeCategories)
+
+                {
+                    <span>@category.Category.CategoryName</span>
+
+                    <br />
+                }
+            }
+            else
+            {
+                <span>No categories assigned.</span>
+            }
         </dd>
     </dl>
+
+    <!-- Ingredients Section -->
+    <h4>Ingredients</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Recipe.Ingredients != null && Model.Recipe.Ingredients.Any())
+            {
+
+                foreach (var ingredient in Model.Recipe.Ingredients)
+
+                {
+                    <tr>
+                        <td>@ingredient.Name</td>
+                        <td>@ingredient.Quantity</td>
+                        <td>@ingredient.Unit</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3" class="text-center">No ingredients available.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 
 <div>

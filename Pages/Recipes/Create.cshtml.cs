@@ -4,13 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using RecipeManager.Data;
 using RecipeManager.Models;
 
 namespace RecipeManager.Pages.Recipes
 {
-    public class CreateModel :  RecipeCategoriesPageModel
+    public class CreateModel : RecipeCategoriesPageModel
     {
         private readonly RecipeManager.Data.RecipeManagerContext _context;
 
@@ -31,6 +30,9 @@ namespace RecipeManager.Pages.Recipes
         [BindProperty]
         public Recipe Recipe { get; set; }
 
+        [BindProperty]
+        public List<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
+
         public async Task<IActionResult> OnPostAsync(string[] selectedCategories)
         {
             var newRecipe = new Recipe();
@@ -46,13 +48,23 @@ namespace RecipeManager.Pages.Recipes
                     newRecipe.RecipeCategories.Add(catToAdd);
                 }
             }
+
+            // Add RecipeCategories to the Recipe
             Recipe.RecipeCategories = newRecipe.RecipeCategories;
+
+            // Save Recipe
             _context.Recipe.Add(Recipe);
+            await _context.SaveChangesAsync();
+
+            // Save Ingredients associated with the Recipe
+            foreach (var ingredient in Ingredients)
+            {
+                ingredient.RecipeID = Recipe.ID; // Link ingredient to the new recipe
+                _context.Ingredient.Add(ingredient);
+            }
+
             await _context.SaveChangesAsync();
             return RedirectToPage("./Index");
         }
-
-        // For more information, see https://aka.ms/RazorPagesCRUD.
-       
     }
 }

@@ -14,14 +14,14 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Recipe.ID" />
+
+            <!-- Recipe Details -->
             <div class="form-group">
-                <span class="text-danger">*</span>
                 <label asp-for="Recipe.Title" class="control-label"></label>
                 <input asp-for="Recipe.Title" class="form-control" />
                 <span asp-validation-for="Recipe.Title" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <span class="text-danger">*</span>
                 <label asp-for="Recipe.Description" class="control-label"></label>
                 <input asp-for="Recipe.Description" class="form-control" />
                 <span asp-validation-for="Recipe.Description" class="text-danger"></span>
@@ -36,44 +36,66 @@
                 <input asp-for="Recipe.DateCreated" class="form-control" />
                 <span asp-validation-for="Recipe.DateCreated" class="text-danger"></span>
             </div>
-            <div class="form-group">
- <div class="table">
- <table>
- <tr>
- @{
- int cnt = 0;
- @if (Model.AssignedCategoryDataList != null)
- {
- foreach (var cat in Model.AssignedCategoryDataList)
-{
- if (cnt++ % 3 == 0)
-{
-@:</tr><tr>
-}
-@:<td>
- <input type="checkbox"
- name="selectedCategories"
-value="@cat.CategoryID"
-@(Html.Raw(cat.Assigned ?
-"checked=\"checked\"" : "")) />
- @cat.CategoryID @: @cat.Name
- @:</td>
- }
- @:</tr>
+            
 
- }
- else
- {
-     <p> No categories available. </p>
- }
- }
- </table>
- </div>
- </div>
+            <!-- Category Selection -->
+            <div class="form-group">
+                <h5>Categories</h5>
+                <div class="table">
+                    <table>
+                        <tr>
+                            @{
+                                int cnt = 0;
+                                foreach (var cat in Model.AssignedCategoryDataList)
+                                {
+                                    if (cnt++ % 3 == 0)
+                                    {
+                                        @:</tr><tr>
+                                    }
+                                    @:<td>
+                                    <input type="checkbox" name="selectedCategories"
+                                           value="@cat.CategoryID"
+                                           @(Html.Raw(cat.Assigned ? "checked=\"checked\"" : "")) />
+                                    @cat.Name
+                                    @:</td>
+                                }
+                                @:</tr>
+                            }
+                    </table>
+                </div>
+            </div>
+
+            <!-- Ingredients Table -->
+            <div class="form-group">
+                <h5>Ingredients</h5>
+                <table id="ingredientsTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Ingredients.Count; i++)
+                        {
+                            <tr>
+                                <td><input name="Ingredients[@i].Name" value="@Model.Ingredients[i].Name" class="form-control" /></td>
+                                <td><input name="Ingredients[@i].Quantity" value="@Model.Ingredients[i].Quantity" class="form-control" /></td>
+                                <td><input name="Ingredients[@i].Unit" value="@Model.Ingredients[i].Unit" class="form-control" /></td>
+                                <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-secondary" onclick="addIngredient()">Add Ingredient</button>
+            </div>
+
+            <!-- Save Button -->
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
-
         </form>
     </div>
 </div>
@@ -84,4 +106,24 @@ value="@cat.CategoryID"
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        let index = @Model.Ingredients.Count;
+
+        function addIngredient() {
+            const table = document.getElementById("ingredientsTable").getElementsByTagName('tbody')[0];
+            const row = table.insertRow();
+            row.innerHTML = `
+                <td><input name="Ingredients[${index}].Name" class="form-control" /></td>
+                <td><input name="Ingredients[${index}].Quantity" class="form-control" /></td>
+                <td><input name="Ingredients[${index}].Unit" class="form-control" /></td>
+                <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+            `;
+            index++;
+        }
+
+        function removeRow(button) {
+            button.parentElement.parentElement.remove();
+        }
+    </script>
 }

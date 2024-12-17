@@ -27,12 +27,13 @@ namespace RecipeManager.Pages.Recipes
             {
                 return NotFound();
             }
-           
-            Recipe = await _context.Recipe
-            .Include(b => b.RecipeCategories).ThenInclude(b => b.Category)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(m => m.ID == id);
 
+            // Include Ingredients and Categories
+            Recipe = await _context.Recipe
+                .Include(r => r.RecipeCategories).ThenInclude(rc => rc.Category)
+                .Include(r => r.Ingredients) // Include Ingredients
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.ID == id);
 
             if (Recipe == null)
             {
@@ -40,7 +41,6 @@ namespace RecipeManager.Pages.Recipes
             }
 
             PopulateAssignedCategoryData(_context, Recipe);
-
             return Page();
         }
     }

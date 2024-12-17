@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RecipeManager.Data;
 using RecipeManager.Models;
@@ -19,12 +20,31 @@ namespace RecipeManager.Pages.Ingredients
             _context = context;
         }
 
-        public IList<Ingredient> Ingredient { get;set; } = default!;
+        public IList<Ingredient> Ingredients { get; set; } = default!;
+
+        [BindProperty(SupportsGet = true)]
+        public int? RecipeID { get; set; } // Selected Recipe ID for filtering
+
+        public SelectList Recipes { get; set; } = default!; // Dropdown for recipes
 
         public async Task OnGetAsync()
         {
-            Ingredient = await _context.Ingredient
-                .Include(i => i.Recipe).ToListAsync();
+            // Fetch recipes for the dropdown
+            Recipes = new SelectList(await _context.Recipe.ToListAsync(), "ID", "Title");
+
+            // Base query for ingredients
+            var ingredientsQuery = _context.Ingredient
+                .Include(i => i.Recipe) // Include Recipe data
+                .AsQueryable();
+
+            // Apply filtering if a recipe is selected
+            if (RecipeID.HasValue)
+            {
+                ingredientsQuery = ingredientsQuery.Where(i => i.RecipeID == RecipeID.Value);
+            }
+
+            // Execute the query
+            Ingredients = await ingredientsQuery.ToListAsync();
         }
     }
 }

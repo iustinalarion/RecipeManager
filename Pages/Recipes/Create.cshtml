@@ -35,32 +35,62 @@
                 <input asp-for="Recipe.DateCreated" class="form-control" />
                 <span asp-validation-for="Recipe.DateCreated" class="text-danger"></span>
             </div>
+
+            <!-- Category Selection Table -->
             <div class="form-group">
- <div class="table">
- <table>
- <tr>
- @{
- int cnt = 0;
- foreach (var cat in Model.AssignedCategoryDataList)
- {
- if (cnt++ % 3 == 0)
-{
-@:</tr><tr>
- }
-@:<td>
- <input type="checkbox"
- name="selectedCategories"
- value="@cat.CategoryID"
- @(Html.Raw(cat.Assigned ?
-"checked=\"checked\"" : "")) />
- @cat.CategoryID @: @cat.Name
- @:</td>
- }
- @:</tr>
- }
- </table>
- </div>
- </div>
+                <h5>Categories</h5>
+                <div class="table">
+                    <table>
+                        <tr>
+                            @{
+                                int cnt = 0;
+                                foreach (var cat in Model.AssignedCategoryDataList)
+                                {
+                                    if (cnt++ % 3 == 0)
+                                    {
+                                        @:</tr><tr>
+                                    }
+                                    @:<td>
+                                    <input type="checkbox"
+                                           name="selectedCategories"
+                                           value="@cat.CategoryID"
+                                           @(Html.Raw(cat.Assigned ? "checked=\"checked\"" : "")) />
+                                    @cat.CategoryID @: @cat.Name
+                                    @:</td>
+                                }
+                                @:</tr>
+                            }
+                    </table>
+                </div>
+            </div>
+
+            <!-- Ingredients Section -->
+            <div class="form-group">
+                <h5>Ingredients</h5>
+                <table id="ingredientsTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Initial Ingredient Row -->
+                        <tr>
+                            <td><input name="Ingredients[0].Name" class="form-control" /></td>
+                            <td><input name="Ingredients[0].Quantity" class="form-control" /></td>
+                            <td><input name="Ingredients[0].Unit" class="form-control" /></td>
+                            <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-secondary" onclick="addIngredient()">Add Ingredient</button> </br>
+            </div>
+            </br>
+
+            <!-- Submit Button -->
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -74,4 +104,24 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+   <script>
+    let index = 1;
+
+    function addIngredient() {
+        const table = document.getElementById("ingredientsTable").getElementsByTagName('tbody')[0];
+        const row = table.insertRow();
+        row.innerHTML = `
+            <td><input name="Ingredients[${index}].Name" class="form-control" required /></td>
+            <td><input name="Ingredients[${index}].Quantity" class="form-control" required /></td>
+            <td><input name="Ingredients[${index}].Unit" class="form-control" required /></td>
+            <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+        `;
+        index++;
+    }
+
+    function removeRow(button) {
+        button.parentElement.parentElement.remove();
+    }
+</script>
 }
