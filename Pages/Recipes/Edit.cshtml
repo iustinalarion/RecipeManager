@@ -42,6 +42,8 @@
  <tr>
  @{
  int cnt = 0;
+ @if (Model.AssignedCategoryDataList != null)
+ {
  foreach (var cat in Model.AssignedCategoryDataList)
 {
  if (cnt++ % 3 == 0)
@@ -58,7 +60,13 @@ value="@cat.CategoryID"
  @:</td>
  }
  @:</tr>
-}
+
+ }
+ else
+ {
+     <p> No categories available. </p>
+ }
+ }
  </table>
  </div>
  </div>

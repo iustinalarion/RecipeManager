@@ -21,6 +21,10 @@ namespace RecipeManager.Pages.Recipes
 
         public IActionResult OnGet()
         {
+            var recipe = new Recipe();
+            recipe.RecipeCategories = new List<RecipeCategory>();
+            PopulateAssignedCategoryData(_context, recipe);
+
             return Page();
         }
 

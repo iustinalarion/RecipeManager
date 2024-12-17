@@ -5,7 +5,7 @@ namespace RecipeManager.Models
 {
     public class RecipeCategoriesPageModel:PageModel
     {
-        public List<AssignedCategoryData> AssignedCategoryDataList;
+        public List<AssignedCategoryData> AssignedCategoryDataList { get; set; } =new List<AssignedCategoryData>();
         public void PopulateAssignedCategoryData(RecipeManagerContext context,
         Recipe recipe)
         {
@@ -31,9 +31,11 @@ namespace RecipeManager.Models
                 recipeToUpdate.RecipeCategories = new List<RecipeCategory>();
                 return;
             }
+
             var selectedCategoriesHS = new HashSet<string>(selectedCategories);
             var bookCategories = new HashSet<int>
             (recipeToUpdate.RecipeCategories.Select(c => c.Category.Id));
+
             foreach (var cat in context.Category)
             {
                 if (selectedCategoriesHS.Contains(cat.Id.ToString()))
