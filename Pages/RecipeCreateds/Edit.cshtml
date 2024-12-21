@@ -1,0 +1,45 @@
+﻿@page
+@model RecipeManager.Pages.RecipeCreateds.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>RecipeCreated</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="RecipeCreated.ID" />
+            <div class="form-group">
+                <label asp-for="RecipeCreated.MemberID" class="control-label"></label>
+                <select asp-for="RecipeCreated.MemberID" class="form-control" asp-items="ViewBag.MemberID"></select>
+                <span asp-validation-for="RecipeCreated.MemberID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RecipeCreated.RecipeID" class="control-label"></label>
+                <select asp-for="RecipeCreated.RecipeID" class="form-control" asp-items="ViewBag.RecipeID"></select>
+                <span asp-validation-for="RecipeCreated.RecipeID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RecipeCreated.ReturnDate" class="control-label"></label>
+                <input asp-for="RecipeCreated.ReturnDate" class="form-control" />
+                <span asp-validation-for="RecipeCreated.ReturnDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
