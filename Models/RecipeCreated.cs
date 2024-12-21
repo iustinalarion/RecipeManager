@@ -9,6 +9,6 @@ namespace RecipeManager.Models
         public Member? Member { get; set; }
         public int? RecipeID { get; set; }
         public Recipe? Recipe { get; set; }
-        [DataType(DataType.Date)]
+       
     }
 }
