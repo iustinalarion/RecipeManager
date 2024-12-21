@@ -27,6 +27,7 @@ builder.Services.AddDbContext<RecipeIdentityContext>(options =>
 
 // Register DefaultIdentity once and attach it to RecipeIdentityContext.
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<RecipeIdentityContext>();
 
 var app = builder.Build();
