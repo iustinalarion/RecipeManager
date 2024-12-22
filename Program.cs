@@ -5,12 +5,19 @@ using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy =>
+   policy.RequireRole("Admin"));
+});
+
 // Add services to the container.
 builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AuthorizeFolder("/Recipes");
     options.Conventions.AllowAnonymousToPage("/Recipes/Index");
     options.Conventions.AllowAnonymousToPage("/Recipes/Details");
+    options.Conventions.AuthorizeFolder("/Members", "AdminPolicy");
 }
 
     );
