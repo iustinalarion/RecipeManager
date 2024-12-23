@@ -43,9 +43,9 @@
                 <td>@ingredient.Unit</td>
                 <td>@ingredient.Recipe?.Title</td>
                 <td>
-                    <a asp-page="./Edit" asp-route-id="@ingredient.ID">Edit</a> |
-                    <a asp-page="./Details" asp-route-id="@ingredient.ID">Details</a> |
-                    <a asp-page="./Delete" asp-route-id="@ingredient.ID">Delete</a>
+                    <a asp-page="./Edit" asp-route-id="@ingredient.ID" class="btn btn-sm btn-info">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@ingredient.ID" class="btn btn-sm btn-info">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@ingredient.ID" class="btn btn-sm btn-info">Delete</a>
                 </td>
             </tr>
         }

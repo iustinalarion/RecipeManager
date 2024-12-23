@@ -48,8 +48,8 @@
                 @Html.DisplayFor(modelItem => item.Phone)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-page="./Edit" asp-route-id="@item.ID" class="btn btn-sm btn-info">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.ID" class="btn btn-sm btn-info">Details</a> |
              
             </td>
         </tr>

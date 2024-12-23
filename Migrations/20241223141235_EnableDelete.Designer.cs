@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RecipeManager.Data;
 
@@ -11,9 +12,11 @@ using RecipeManager.Data;
 namespace RecipeManager.Migrations
 {
     [DbContext(typeof(RecipeManagerContext))]
-    partial class RecipeManagerContextModelSnapshot : ModelSnapshot
+    [Migration("20241223141235_EnableDelete")]
+    partial class EnableDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,10 +101,6 @@ namespace RecipeManager.Migrations
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("ID");
 
                     b.ToTable("Member");
@@ -123,9 +122,6 @@ namespace RecipeManager.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<int>("MemberID")
-                        .HasColumnType("int");
-
                     b.Property<int>("PreparationTime")
                         .HasColumnType("int");
 
@@ -135,8 +131,6 @@ namespace RecipeManager.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("MemberID");
 
                     b.ToTable("Recipe");
                 });
@@ -191,20 +185,10 @@ namespace RecipeManager.Migrations
                 {
                     b.HasOne("RecipeManager.Models.Recipe", "Recipe")
                         .WithMany("Ingredients")
-                        .HasForeignKey("RecipeID");
+                        .HasForeignKey("RecipeID")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Recipe");
-                });
-
-            modelBuilder.Entity("RecipeManager.Models.Recipe", b =>
-                {
-                    b.HasOne("RecipeManager.Models.Member", "Member")
-                        .WithMany("RecipeCreateds")
-                        .HasForeignKey("MemberID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("RecipeManager.Models.RecipeCategory", b =>
@@ -229,11 +213,11 @@ namespace RecipeManager.Migrations
             modelBuilder.Entity("RecipeManager.Models.RecipeCreated", b =>
                 {
                     b.HasOne("RecipeManager.Models.Member", "Member")
-                        .WithMany()
+                        .WithMany("RecipeCreateds")
                         .HasForeignKey("MemberID");
 
                     b.HasOne("RecipeManager.Models.Recipe", "Recipe")
-                        .WithMany()
+                        .WithMany("RecipeCreateds")
                         .HasForeignKey("RecipeID");
 
                     b.Navigation("Member");
@@ -256,6 +240,8 @@ namespace RecipeManager.Migrations
                     b.Navigation("Ingredients");
 
                     b.Navigation("RecipeCategories");
+
+                    b.Navigation("RecipeCreateds");
                 });
 #pragma warning restore 612, 618
         }

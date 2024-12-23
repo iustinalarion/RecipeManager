@@ -28,6 +28,7 @@ namespace RecipeManager.Models
 
         public ICollection<RecipeCategory>? RecipeCategories {  get; set; }
 
-        public ICollection<RecipeCreated>? RecipeCreateds { get; set; }
+        public int MemberID { get; set; }
+        public Member Member { get; set; }
     }
 }

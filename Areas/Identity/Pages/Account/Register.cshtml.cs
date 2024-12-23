@@ -125,6 +125,7 @@ _context;
            Input.Password);
 
             Member.Email = Input.Email;
+            Member.UserID = user.Id;
             _context.Member.Add(Member);
             await _context.SaveChangesAsync();
 

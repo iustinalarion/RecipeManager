@@ -29,7 +29,7 @@ namespace RecipeManager.Pages.RecipeCreateds
                     });
 
 
-            ViewData["MemberID"] = new SelectList(_context.Member, "ID", "FullName");
+        ViewData["MemberID"] = new SelectList(_context.Member, "ID", "FullName");
         ViewData["RecipeID"] = new SelectList(recipeList, "ID", "RecipeFullName");
             return Page();
         }

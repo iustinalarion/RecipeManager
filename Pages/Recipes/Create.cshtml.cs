@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using RecipeManager.Data;
 using RecipeManager.Models;
+using System.Security.Claims;
+using Microsoft.EntityFrameworkCore; // For accessing user claims
 
 namespace RecipeManager.Pages.Recipes
 {
@@ -35,6 +37,14 @@ namespace RecipeManager.Pages.Recipes
 
         public async Task<IActionResult> OnPostAsync(string[] selectedCategories)
         {
+            // Get the current user's MemberID
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var member = await _context.Member.FirstOrDefaultAsync(m => m.UserID == userId);
+            // Assign MemberID to the Recipe
+            Recipe.Member = member;
+            Recipe.Member.UserID = userId;
+
             var newRecipe = new Recipe();
             if (selectedCategories != null)
             {
