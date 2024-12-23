@@ -1,0 +1,2 @@
+﻿DELETE FROM Member
+WHERE UserID IS NULL;

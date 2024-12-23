@@ -28,9 +28,11 @@ namespace RecipeManager.Models
 
         public ICollection<RecipeCategory>? RecipeCategories {  get; set; }
 
-        public int MemberID { get; set; }
+        public int? MemberID { get; set; }
         public Member Member { get; set; }
 
         public ICollection<FavoriteRecipe> FavoriteRecipes { get; set; } = new List<FavoriteRecipe>();
+
+        public string ImagePath { get; set; }
     }
 }

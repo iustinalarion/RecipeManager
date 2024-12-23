@@ -11,7 +11,7 @@ using RecipeManager.Models;
 
 namespace RecipeManager.Pages.Recipes
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class EditModel : RecipeCategoriesPageModel
     {
         private readonly RecipeManagerContext _context;
@@ -53,7 +53,7 @@ namespace RecipeManager.Pages.Recipes
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id, string[] selectedCategories)
+        public async Task<IActionResult> OnPostAsync(int? id, string[] selectedCategories, IFormFile? Image)
         {
             if (id == null)
             {
@@ -75,9 +75,35 @@ namespace RecipeManager.Pages.Recipes
             try
             {
                 await TryUpdateModelAsync<Recipe>(
-               recipeToUpdate,
-               "Recipe",
-               r => r.Title, r => r.Description, r => r.PreparationTime, r => r.DateCreated, r => r.Ingredients, r => r.RecipeCategories);
+                    recipeToUpdate,
+                    "Recipe",
+                    r => r.Title, r => r.Description, r => r.PreparationTime, r => r.DateCreated);
+
+                // Handle image upload
+                if (Image != null)
+                {
+                    var imagePath = Path.Combine("wwwroot/images", Image.FileName);
+
+                    // Delete the old image if it exists
+                    if (!string.IsNullOrEmpty(recipeToUpdate.ImagePath))
+                    {
+                        var oldImagePath = Path.Combine("wwwroot", recipeToUpdate.ImagePath.TrimStart('/'));
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+
+                    // Save the new image
+                    Directory.CreateDirectory("wwwroot/images");
+                    using (var stream = new FileStream(imagePath, FileMode.Create))
+                    {
+                        await Image.CopyToAsync(stream);
+                    }
+
+                    // Update the recipe's ImagePath
+                    recipeToUpdate.ImagePath = $"/images/{Image.FileName}";
+                }
 
                 // Update Categories
                 UpdateBookCategories(_context, selectedCategories, recipeToUpdate);
@@ -88,13 +114,12 @@ namespace RecipeManager.Pages.Recipes
                 // Save changes
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");
-
             }
             catch
             {
                 // Repopulate Categories and Ingredients if ModelState is invalid
                 PopulateAssignedCategoryData(_context, recipeToUpdate);
-                Ingredients = recipeToUpdate.Ingredients.ToList();
+                Ingredients = recipeToUpdate.Ingredients?.ToList() ?? new List<Ingredient>();
                 return Page();
             }
         }

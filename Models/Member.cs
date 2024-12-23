@@ -11,7 +11,7 @@ namespace RecipeManager.Models
 
         [StringLength(30, MinimumLength = 3)]
         public string? FirstName { get; set; }
-        public string UserID { get; set; }
+        public string? UserID { get; set; }
 
         [RegularExpression(@"^[A-Z]+[a-z\s]*$")]
         [StringLength(30, MinimumLength = 3)]

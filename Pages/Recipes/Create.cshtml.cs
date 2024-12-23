@@ -35,15 +35,11 @@ namespace RecipeManager.Pages.Recipes
         [BindProperty]
         public List<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
 
-        public async Task<IActionResult> OnPostAsync(string[] selectedCategories)
+        public async Task<IActionResult> OnPostAsync(string[] selectedCategories, IFormFile Image)
         {
-            // Get the current user's MemberID
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var member = await _context.Member.FirstOrDefaultAsync(m => m.UserID == userId);
-            // Assign MemberID to the Recipe
             Recipe.Member = member;
-            Recipe.Member.UserID = userId;
 
             var newRecipe = new Recipe();
             if (selectedCategories != null)
@@ -59,17 +55,24 @@ namespace RecipeManager.Pages.Recipes
                 }
             }
 
-            // Add RecipeCategories to the Recipe
-            Recipe.RecipeCategories = newRecipe.RecipeCategories;
+            if (Image != null)
+            {
+                var imagePath = Path.Combine("wwwroot/images", Image.FileName);
+                Directory.CreateDirectory("wwwroot/images");
+                using (var stream = new FileStream(imagePath, FileMode.Create))
+                {
+                    await Image.CopyToAsync(stream);
+                }
+                Recipe.ImagePath = $"/images/{Image.FileName}";
+            }
 
-            // Save Recipe
+            Recipe.RecipeCategories = newRecipe.RecipeCategories;
             _context.Recipe.Add(Recipe);
             await _context.SaveChangesAsync();
 
-            // Save Ingredients associated with the Recipe
             foreach (var ingredient in Ingredients)
             {
-                ingredient.RecipeID = Recipe.ID; // Link ingredient to the new recipe
+                ingredient.RecipeID = Recipe.ID;
                 _context.Ingredient.Add(ingredient);
             }
 

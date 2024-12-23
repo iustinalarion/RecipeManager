@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using RecipeManager.Data;
 using RecipeManager.Models;
 using System.Security.Claims; // For accessing User claims
+using Microsoft.AspNetCore.Authorization;
 
 namespace RecipeManager.Pages.Recipes
 {
+    
     public class OwnRecipe : PageModel
     {
         private readonly RecipeManager.Data.RecipeManagerContext _context;

@@ -18,6 +18,7 @@ builder.Services.AddRazorPages(options =>
     options.Conventions.AllowAnonymousToPage("/Recipes/Index");
     options.Conventions.AllowAnonymousToPage("/Recipes/Details");
     options.Conventions.AuthorizeFolder("/Members", "AdminPolicy");
+
 }
 
     );

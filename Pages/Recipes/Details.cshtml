@@ -91,7 +91,17 @@
     </table>
 </div>
 
+@if (!string.IsNullOrEmpty(Model.Recipe.ImagePath))
+
+{
+    <div>
+        <h4>Image</h4>
+        <img src="@Model.Recipe.ImagePath" alt="@Model.Recipe.Title" class="img-fluid" />
+    </div>
+}
+</br>
 <div>
+    
     <form method="post" asp-page-handler="Favorite" asp-route-id="@Model.Recipe.ID">
         <button type="submit" class="btn btn-primary">Add to Favorites</button>
     </form>
