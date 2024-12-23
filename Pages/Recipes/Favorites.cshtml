@@ -1,0 +1,50 @@
+﻿@page
+@model RecipeManager.Pages.Recipes.FavoritesModel
+@{
+    ViewData["Title"] = "Your Favorite Recipes";
+}
+
+<h1>Your Favorite Recipes</h1>
+
+<form method="get">
+    <p>
+        <input type="text" name="SearchString" value="@Model.SearchString" placeholder="Search your favorites..." />
+        <button type="submit">Search</button>
+    </p>
+</form>
+
+@if (Model.RecipeD?.Recipes != null && Model.RecipeD.Recipes.Any())
+
+{
+    <ul>
+        @foreach (var recipe in Model.RecipeD.Recipes)
+
+        {
+            <li>
+                <h3>
+                    <a asp-page="/Recipes/Details" asp-route-id="@recipe.ID">
+                        @recipe.Title
+                    </a>
+                </h3>
+                <p>@recipe.Description</p>
+                <p>Preparation Time: @recipe.PreparationTime minutes</p>
+                <p>Date Created: @recipe.DateCreated.ToString("MM/dd/yyyy")</p>
+
+                <h5>Categories:</h5>
+                <ul>
+                    @foreach (var category in recipe.RecipeCategories.Select(rc => rc.Category))
+
+                    {
+                        <li>@category.CategoryName</li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+}
+
+else
+
+{
+    <p>You have not added any recipes to your favorites yet.</p>
+}

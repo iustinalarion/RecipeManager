@@ -92,6 +92,9 @@
 </div>
 
 <div>
+    <form method="post" asp-page-handler="Favorite" asp-route-id="@Model.Recipe.ID">
+        <button type="submit" class="btn btn-primary">Add to Favorites</button>
+    </form>
     <a asp-page="./Edit" asp-route-id="@Model.Recipe.ID">Edit</a> |
     <a asp-page="./Index">Back to List</a>
 </div>

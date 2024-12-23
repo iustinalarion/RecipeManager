@@ -32,5 +32,7 @@ namespace RecipeManager.Models
             }
         }
         public ICollection<Recipe>? RecipeCreateds { get; set; }
+
+        public ICollection<FavoriteRecipe> FavoriteRecipes { get; set; } = new List<FavoriteRecipe>();
     }
 }

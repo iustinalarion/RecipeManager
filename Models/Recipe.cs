@@ -30,5 +30,7 @@ namespace RecipeManager.Models
 
         public int MemberID { get; set; }
         public Member Member { get; set; }
+
+        public ICollection<FavoriteRecipe> FavoriteRecipes { get; set; } = new List<FavoriteRecipe>();
     }
 }
