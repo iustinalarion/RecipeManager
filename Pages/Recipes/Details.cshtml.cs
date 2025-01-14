@@ -1,26 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using RecipeManager.Data;
-using RecipeManager.Models;
+﻿        using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.RazorPages;
+    using Microsoft.EntityFrameworkCore;
+    using RecipeManager.Data;
+    using RecipeManager.Models;
 
-namespace RecipeManager.Pages.Recipes
-{
-    public class DetailsModel : RecipeCategoriesPageModel
+    namespace RecipeManager.Pages.Recipes
     {
-        private readonly RecipeManager.Data.RecipeManagerContext _context;
-
-        public DetailsModel(RecipeManager.Data.RecipeManagerContext context)
+        public class DetailsModel : RecipeCategoriesPageModel
         {
-            _context = context;
-        }
+            private readonly RecipeManager.Data.RecipeManagerContext _context;
 
-        public Recipe Recipe { get; set; } = default!;
+            public DetailsModel(RecipeManager.Data.RecipeManagerContext context)
+            {
+                _context = context;
+            }
+
+            public Recipe Recipe { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -29,11 +29,10 @@ namespace RecipeManager.Pages.Recipes
                 return NotFound();
             }
 
-            // Include Ingredients and Categories
             Recipe = await _context.Recipe
-                .Include(r => r.RecipeCategories).ThenInclude(rc => rc.Category)
-                .Include(r => r.Ingredients) // Include Ingredients
-                .AsNoTracking()
+                .Include(r => r.RecipeCategories)
+                .ThenInclude(rc => rc.Category)
+                .Include(r => r.Ingredients) // ✅ Include Ingredients
                 .FirstOrDefaultAsync(m => m.ID == id);
 
             if (Recipe == null)
@@ -41,38 +40,45 @@ namespace RecipeManager.Pages.Recipes
                 return NotFound();
             }
 
-            PopulateAssignedCategoryData(_context, Recipe);
             return Page();
         }
 
-        public async Task<IActionResult> OnPostFavoriteAsync(int id)
+
+
+        public async Task<IActionResult> OnPostFavoriteAsync(int recipeId)
         {
-            // Get the logged-in user's MemberID
-            var memberIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(memberIdString) || !int.TryParse(memberIdString, out int memberId))
+            if (recipeId == 0)
             {
-                // Redirect if the user is not logged in
-                return RedirectToPage("./Index");
+                return NotFound();
             }
 
-            // Check if the favorite already exists
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var member = await _context.Member.FirstOrDefaultAsync(m => m.IdentityUserId == userId);
+
+            if (member == null)
+            {
+                return NotFound();
+            }
+
             var existingFavorite = await _context.FavoriteRecipe
-                .FirstOrDefaultAsync(f => f.RecipeID == id && f.MemberID == memberId);
+                .FirstOrDefaultAsync(fr => fr.MemberID == member.ID && fr.RecipeID == recipeId);
 
             if (existingFavorite == null)
             {
-                // Add the favorite to the database
-                var favorite = new FavoriteRecipe
+                var favoriteRecipe = new FavoriteRecipe
                 {
-                    MemberID = memberId,
-                    RecipeID = id
+                    MemberID = member.ID,
+                    RecipeID = recipeId
                 };
-                _context.FavoriteRecipe.Add(favorite);
+
+                _context.FavoriteRecipe.Add(favoriteRecipe);
                 await _context.SaveChangesAsync();
             }
 
-            // Redirect back to the Details page
-            return RedirectToPage("./Details", new { id });
+            return RedirectToPage("Favorites");
         }
+    
+
+
     }
 }

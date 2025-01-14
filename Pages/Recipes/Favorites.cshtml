@@ -6,6 +6,7 @@
 
 <h1>Your Favorite Recipes</h1>
 
+<!-- Search Form -->
 <form method="get">
     <p>
         <input type="text" name="SearchString" value="@Model.SearchString" placeholder="Search your favorites..." />
@@ -13,24 +14,25 @@
     </p>
 </form>
 
-@if (Model.RecipeD?.Recipes != null && Model.RecipeD.Recipes.Any())
+<!-- Check if there are any favorite recipes -->
+@if (Model.FavoriteRecipes != null && Model.FavoriteRecipes.Any())
 
 {
     <ul>
-        @foreach (var recipe in Model.RecipeD.Recipes)
+        @foreach (var recipe in Model.FavoriteRecipes)
 
         {
             <li>
                 <h3>
-                    <a asp-page="/Recipes/Details" asp-route-id="@recipe.ID">
-                        @recipe.Title
-                    </a>
+                    <!-- Link to the recipe details page -->
+                    <a asp-page="/Recipes/Details" asp-route-id="@recipe.ID">@recipe.Title</a>
                 </h3>
                 <p>@recipe.Description</p>
-                <p>Preparation Time: @recipe.PreparationTime minutes</p>
-                <p>Date Created: @recipe.DateCreated.ToString("MM/dd/yyyy")</p>
+                <p><strong>Preparation Time:</strong> @recipe.PreparationTime minutes</p>
+                <p><strong>Date Created:</strong> @recipe.DateCreated.ToString("MM/dd/yyyy")</p>
 
                 <h5>Categories:</h5>
+                <!-- Display categories associated with the recipe -->
                 <ul>
                     @foreach (var category in recipe.RecipeCategories.Select(rc => rc.Category))
 

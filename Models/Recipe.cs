@@ -33,6 +33,6 @@ namespace RecipeManager.Models
 
         public ICollection<FavoriteRecipe> FavoriteRecipes { get; set; } = new List<FavoriteRecipe>();
 
-        public string ImagePath { get; set; }
+        public string? ImagePath { get; set; }
     }
 }

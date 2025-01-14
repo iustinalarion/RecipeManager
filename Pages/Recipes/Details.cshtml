@@ -46,7 +46,6 @@
 
                 {
                     <span>@category.Category.CategoryName</span>
-
                     <br />
                 }
             }
@@ -57,7 +56,6 @@
         </dd>
     </dl>
 
-    <!-- Ingredients Section -->
     <h4>Ingredients</h4>
     <table class="table table-bordered">
         <thead>
@@ -96,15 +94,26 @@
 {
     <div>
         <h4>Image</h4>
-        <img src="@Model.Recipe.ImagePath" alt="@Model.Recipe.Title" class="img-fluid" />
+        <img src="~/@Model.Recipe.ImagePath" alt="@Model.Recipe.Title" class="img-fluid" />
     </div>
 }
-</br>
+
+else
+
+{
+    <div>
+        <h4>Image</h4>
+        <p>No image available.</p>
+    </div>
+}
+
+<br />
 <div>
-    
-    <form method="post" asp-page-handler="Favorite" asp-route-id="@Model.Recipe.ID">
+    <form method="post" asp-page-handler="Favorite">
+        <input type="hidden" name="recipeId" value="@Model.Recipe.ID" />
         <button type="submit" class="btn btn-primary">Add to Favorites</button>
     </form>
     <a asp-page="./Edit" asp-route-id="@Model.Recipe.ID">Edit</a> |
     <a asp-page="./Index">Back to List</a>
 </div>
+    

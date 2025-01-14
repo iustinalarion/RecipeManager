@@ -111,68 +111,72 @@ _context;
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-
             returnUrl ??= Url.Content("~/");
-            ExternalLogins = (await
-           _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
+            // Create a new IdentityUser
             var user = CreateUser();
-            await _userStore.SetUserNameAsync(user, Input.Email,
-           CancellationToken.None);
-            await _emailStore.SetEmailAsync(user, Input.Email,
-           CancellationToken.None);
-            var result = await _userManager.CreateAsync(user,
-           Input.Password);
+            await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+            await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
-            Member.Email = Input.Email;
-            Member.UserID = user.Id;
-            _context.Member.Add(Member);
-            await _context.SaveChangesAsync();
+            // Create the user in the Identity system
+            var result = await _userManager.CreateAsync(user, Input.Password);
 
             if (result.Succeeded)
             {
                 _logger.LogInformation("User created a new account with password.");
 
-                var role = await _userManager.AddToRoleAsync(user, "User");
-                var userId = await _userManager.GetUserIdAsync(user);
-                var code = await
-               _userManager.GenerateEmailConfirmationTokenAsync(user);
-                code =
-               WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                var callbackUrl = Url.Page("/Account/ConfirmEmail",
-               pageHandler: null,
-               values: new
-               {
-                   area = "Identity",
-                   userId = userId,
-                   code = code,
-                   returnUrl = returnUrl
-               },
-                protocol: Request.Scheme);
-                await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-
-                $"Please confirm your account by <a href = '{HtmlEncoder.Default.Encode(callbackUrl)}' > clicking here </ a >.");
-
-
-                if
-               (_userManager.Options.SignIn.RequireConfirmedAccount)
+                // ✅ Create and link the Member record
+                var member = new Member
                 {
-                    return RedirectToPage("RegisterConfirmation", new
-                    {
-                        email = Input.Email,
-                        returnUrl = returnUrl
-                    });
+                    FirstName = Member.FirstName,
+                    LastName = Member.LastName,
+                    Email = Input.Email,
+                    UserID = user.Id, // Optional
+                    IdentityUserId = user.Id // ✅ Link to the IdentityUser
+                };
+
+                _context.Member.Add(member);
+                await _context.SaveChangesAsync();
+
+                // Assign role and send confirmation email (optional)
+                await _userManager.AddToRoleAsync(user, "User");
+
+                var userId = await _userManager.GetUserIdAsync(user);
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+                var callbackUrl = Url.Page("/Account/ConfirmEmail", null, new
+                {
+                    area = "Identity",
+                    userId = userId,
+                    code = code,
+                    returnUrl = returnUrl
+                }, Request.Scheme);
+
+                await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                {
+                    return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
                 }
                 else
                 {
-                    await _signInManager.SignInAsync(user,
-                   isPersistent: false);
+                    await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);
                 }
-
             }
+
+            // If creation failed, show errors
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
             return Page();
         }
+
 
         private IdentityUser CreateUser()
         {
